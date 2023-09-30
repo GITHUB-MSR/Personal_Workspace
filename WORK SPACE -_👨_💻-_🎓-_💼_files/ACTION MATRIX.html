@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<!-- saved from url=(0060)file:///C:/Users/91709/Desktop/MSR/RUNS/ACTION%20MATRIX.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><section>
+  
+
+  <style>
+    @import url(https://fonts.googleapis.com/css?family=Noto+Serif:700);
+
+    body {
+      margin: 0;
+     background-color: transparent;
+      font-family: 'Noto Serif', serif;
+      background-repeat: no-repeat;
+      background-size: cover;
+      font-size: 4em;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    canvas {
+      position: absolute;
+      left: 90%;
+      top: 60%; 
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      /* Neon glow effect */
+      zoom:30%; /* Adjust the zoom value to make the clock smaller */
+      border: 1px solid white; /* Add a 2px white border */
+      background-color: transparent; /* Make the canvas background transparent */
+      z-index: 999;
+    }
+  </style>
+
+
+  <canvas id="canv" width="500" height="500"></canvas>
+
+  <script>
+    var c = document.getElementById('canv');
+    var $ = c.getContext('2d');
+    var ang = 0;
+    var secondsColor = 'rgba(0, 0, 0, 0)'; /* Updated seconds color with transparency */
+    var minutesColor = 'rgba(0, 0, 0, 0)'; /* Updated minutes color with transparency */
+    var hoursColor = 'rgba(0, 0, 0, 0)'; /* Updated hours color with transparency */
+    var t = setInterval(updateTime, 50);
+
+    function updateTime() {
+      var currentDate = new Date();
+      $.clearRect(0, 0, c.width, c.height); /* Clear the canvas on each update */
+      currentSec = currentDate.getSeconds();
+      currentMillisec = currentDate.getMilliseconds();
+      currentMin = currentDate.getMinutes();
+      currentHr = currentDate.getHours();
+      if (currentHr == 0) {
+        currentHr = 12;
+      } else if (currentHr > 12) {
+        currentHr -= 12;
+      }
+      drawSeconds();
+      drawMinutes();
+      drawHours();
+    }
+
+    function drawSeconds() {
+      ang = 0.006 * ((currentSec * 1000) + currentMillisec);
+      $.fillStyle = secondsColor;
+      $.beginPath();
+      $.moveTo(250, 250);
+      $.lineTo(250, 50);
+      $.arc(250, 250, 200, calcDeg(0), calcDeg(ang), false);
+      $.lineTo(250, 250);
+      $.shadowColor = secondsColor;
+      $.shadowBlur = 30;
+      $.fill();
+      $.strokeStyle = 'white'; // Set the stroke color to white
+      $.lineWidth = 2.5; // Set the line width to make it thicker
+      $.stroke(); // Add this to apply the border
+    }
+
+    function drawMinutes() {
+      ang = 0.0001 * ((currentMin * 60 * 1000) + (currentSec * 1000) + currentMillisec);
+      $.fillStyle = minutesColor;
+      $.beginPath();
+      $.moveTo(250, 250);
+      $.lineTo(250, 100);
+      $.arc(250, 250, 150, calcDeg(0), calcDeg(ang), false);
+      $.lineTo(250, 250);
+      $.shadowColor = minutesColor;
+      $.shadowBlur = 30;
+      $.fill();
+      $.strokeStyle = 'white'; // Set the stroke color to white
+      $.lineWidth = 2.5; // Set the line width to make it thicker
+      $.stroke(); // Add this to apply the border
+    }
+
+    function drawHours() {
+      ang = 0.000008333 * ((currentHr * 60 * 60 * 1000) + (currentMin * 60 * 1000) + (currentSec * 1000) + currentMillisec);
+      if (ang > 360) {
+        ang -= 360;
+      }
+      $.fillStyle = hoursColor;
+      $.beginPath();
+      $.moveTo(250, 250);
+      $.lineTo(250, 150);
+      $.arc(250, 250, 100, calcDeg(0), calcDeg(ang), false);
+      $.lineTo(250, 250);
+      $.shadowColor = hoursColor;
+      $.shadowBlur = 30;
+      $.fill();
+      $.strokeStyle = 'white'; // Set the stroke color to white
+      $.lineWidth = 2.5; // Set the line width to make it thicker
+      $.stroke(); // Add this to apply the border
+    }
+
+    function calcDeg(deg) {
+      return (Math.PI / 180) * (deg - 90);
+    }
+
+    window.addEventListener('resize', function() {
+      c.width = 500;
+      c.height = 500;
+    });
+  </script>
+
+
+</section>
+
+
+
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: transparent;
+            background-repeat: no-repeat;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .task-container {
+/* From https://css.glass */
+background: rgba(255, 255, 255, 0.02);
+border-radius: 6px;
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(0.5px);
+-webkit-backdrop-filter: blur(0.2px);
+border: 1px solid rgba(255, 255, 255, 0.3);
+      width: 440px;
+      height: 130px;
+      padding: 24px;
+      text-align: center;
+      position: relative; right:-27%; top:10%;
+    }
+
+    #wed {
+      margin: 0;
+      color: #eeeaea;
+      font-size: 30px;
+      font-family: Antipasto Pro Extralight;
+      letter-spacing: 10px;
+      display: flex; justify-content: left;
+    }
+    .current-task {
+  font-size: 25px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-top: 6px;
+  font-family: Antipasto Pro Extralight;
+      display: flex; justify-content: left;
+  letter-spacing: 7px;
+
+  /* Animation */
+  animation-name: neon-blink;
+  animation-duration: 5s; /* Adjust this value to change the speed of blinking */
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes neon-blink {
+  0%, 100% {
+    color: #ddd4d4;
+    text-shadow: none;
+    opacity: 0.8;
+  }
+  50% {
+    color: #fff;
+    text-shadow: 0 0 1px #fff, 0 0 2px #fff, 0 0 2px #fff, 0 0 2px #f0e7eb, 0 0 2px #f0e7eb, 0 0 3px #f0e7eb, 0 0 1px #f0e7eb;
+    opacity: 1;
+  }
+}
+
+
+    .task-time {
+      font-size: 18px;
+      color: #ffffff;
+      margin-top: 10px;
+      font-family: Calibri Light;
+      display: flex; justify-content: left;
+      letter-spacing: 2px;
+    }
+
+    .start-time {
+      color: #ffffff;
+      border-right: 2px solid rgba(0, 255, 0, 0.4);
+      border-bottom: 2px solid rgba(0, 255, 0, 0.4);
+      padding-right: 3px;
+
+    }
+
+    .end-time {
+      color: #ffffff;
+      border-left: 2px solid rgba(255, 0, 0, 0.410);
+      border-bottom: 2px solid rgba(255, 0, 0, 0.410);
+      padding-left: 3px;
+    }
+  </style>
+
+
+  <script>
+    // Function to update the current task and time
+    function updateTask() {
+      const tasks = [
+        { name: "WAKE UP",                  start: "4:00 AM", end: "4:01 AM" },
+        { name: "PRAYER 🙏",              start: "4:01 AM", end: "4:30 AM" },
+        { name: "EXERCISE 🏋🏻‍♂️",           start: "4:30 AM", end: "5:00 AM" },
+        { name: "STUDY 📖 📚",         start: "5:00 AM", end: "9:00 AM" },
+        { name: "BREAKFAST 🍳",       start: "9:00 AM", end: "9:30 AM" },
+        { name: "STUDY 📖📚",          start: "9:30 AM", end: "12:30 PM" },
+        { name: "LUNCH 🍕 🍔",       start: "12:30 PM", end: "1:00 PM" },
+        { name: "STUDY 📖📚",          start: "1:00 PM", end: "6:00 PM" },
+        { name: "SOFT SKILLS 🗣️",      start: "6:00 PM", end: "6:30 PM" },
+        { name: "TYPING PRACTICE 📇", start: "6:30 AM", end: "7:00 AM" },
+        { name: "SPARE TIME ⏱️",        start: "7:00 PM", end: "7:30 PM" },
+        { name: "FAMILY PRAYER 🙏🤲",       start: "7:30 PM", end: "8:00 PM" },
+        { name: "DINNER 🍽️",             start: "8:00 PM", end: "8:30 PM" },
+        { name: "STUDY 📖📚",       start: "8:30 PM", end: "10:00 PM" },
+        { name: "SLEEP 💤😴",        start: "10:00 PM", end: "3:55 AM" }
+      ];
+
+      const now = new Date();
+      const currentTime = now.getTime();
+
+      for (let i = 0; i < tasks.length; i++) {
+        const startTime = new Date(now.toLocaleDateString() + " " + tasks[i].start).getTime();
+        const endTime = new Date(now.toLocaleDateString() + " " + tasks[i].end).getTime();
+
+        if (currentTime >= startTime && currentTime <= endTime) {
+          document.getElementById("currentTask").textContent = tasks[i].name;
+
+          // Clear previous styles before updating
+          document.getElementById("currentTaskTime").innerHTML = 
+            "<span class='start-time'>" + tasks[i].start + "</span>      TO     " +
+            "<span class='end-time'>" + tasks[i].end + "</span>";
+
+          break;
+        }
+      }
+    }
+
+    setInterval(updateTask, 1000);
+  </script>
+
+
+
+
+  <div class="task-container">
+    <h1 id="wed">CURRENT TASK</h1>
+    <div class="current-task" id="currentTask">-</div>
+    <div class="task-time" id="currentTaskTime">-</div>
+  </div>
+
+
+
+</body></html>
