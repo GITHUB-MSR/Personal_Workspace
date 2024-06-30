@@ -1,123 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Chat</title>
-    <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real-Time Chat</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+    }
+    .container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #messages {
+        min-height: 200px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+        overflow-y: scroll;
+    }
+    input[type="text"] {
+        width: calc(100% - 70px);
+        padding: 8px;
+        margin-right: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    button {
+        padding: 8px 15px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+</style>
 </head>
 <body>
-    <div class="container">
-        <input type="text" id="codeInput" placeholder="Enter 4-digit code...">
-        <button onclick="joinChat()">Join Chat</button>
-        <div id="chatContainer" style="display: none;">
-            <div id="messages"></div>
-            <input type="text" id="messageInput" placeholder="Type your message...">
-            <button onclick="sendMessage()">Send</button>
-        </div>
+<div class="container">
+    <input type="text" id="codeInput" placeholder="Enter 4-digit code...">
+    <button onclick="joinChat()">Join Chat</button>
+    <div id="chatContainer" style="display: none;">
+        <div id="messages"></div>
+        <input type="text" id="messageInput" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
     </div>
-    <script src="script.js"></script>
-</body>
-</html>
-
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-}
-
-.container {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-#messages {
-    min-height: 200px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-    overflow-y: scroll;
-}
-
-input[type="text"] {
-    width: calc(100% - 70px);
-    padding: 8px;
-    margin-right: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-button {
-    padding: 8px 15px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-</style>
-
+</div>
 <script>
     var socket = null;
 
-function joinChat() {
-    var codeInput = document.getElementById("codeInput").value.trim();
-    if (codeInput.length === 4 && /^\d+$/.test(codeInput)) {
-        // Valid code entered, connect to WebSocket
-        socket = new WebSocket('ws://localhost:8080'); // Replace with your WebSocket server URL
+    function joinChat() {
+        var codeInput = document.getElementById("codeInput").value.trim();
+        if (codeInput.length === 4 && /^\d+$/.test(codeInput)) {
+            // Valid code entered, connect to WebSocket
+            socket = new WebSocket('ws://localhost:8080'); // Replace with your WebSocket server URL
 
-        // Handle WebSocket open event
-        socket.onopen = function(event) {
-            console.log('WebSocket connection established.');
-            // Send the code to the server to join the chat room
-            socket.send(codeInput);
-            document.getElementById("chatContainer").style.display = "block";
-        };
+            // Handle WebSocket open event
+            socket.onopen = function(event) {
+                console.log('WebSocket connection established.');
+                // Send the code to the server to join the chat room
+                socket.send(codeInput);
+                document.getElementById("chatContainer").style.display = "block";
+            };
 
-        // Handle WebSocket message event (receiving messages)
-        socket.onmessage = function(event) {
-            var receivedMessage = event.data;
-            addMessage("Friend: " + receivedMessage);
-        };
+            // Handle WebSocket message event (receiving messages)
+            socket.onmessage = function(event) {
+                var receivedMessage = event.data;
+                addMessage("Friend: " + receivedMessage);
+            };
 
-        // Handle WebSocket error event
-        socket.onerror = function(error) {
-            console.error('WebSocket error: ', error);
-        };
+            // Handle WebSocket error event
+            socket.onerror = function(error) {
+                console.error('WebSocket error: ', error);
+            };
 
-        // Handle WebSocket close event
-        socket.onclose = function(event) {
-            console.log('WebSocket connection closed.');
-        };
-    } else {
-        alert("Please enter a valid 4-digit code.");
+            // Handle WebSocket close event
+            socket.onclose = function(event) {
+                console.log('WebSocket connection closed.');
+            };
+        } else {
+            alert("Please enter a valid 4-digit code.");
+        }
     }
-}
 
-function sendMessage() {
-    var messageInput = document.getElementById("messageInput");
-    var message = messageInput.value.trim();
-    if (message !== "") {
-        addMessage("You: " + message);
-        messageInput.value = "";
-        // Send message to WebSocket server
-        socket.send(message);
+    function sendMessage() {
+        var messageInput = document.getElementById("messageInput");
+        var message = messageInput.value.trim();
+        if (message !== "") {
+            addMessage("You: " + message);
+            messageInput.value = "";
+            // Send message to WebSocket server
+            socket.send(message);
+        }
     }
-}
 
-function addMessage(message) {
-    var messagesDiv = document.getElementById("messages");
-    var messageParagraph = document.createElement("p");
-    messageParagraph.textContent = message;
-    messagesDiv.appendChild(messageParagraph);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
-
+    function addMessage(message) {
+        var messagesDiv = document.getElementById("messages");
+        var messageParagraph = document.createElement("p");
+        messageParagraph.textContent = message;
+        messagesDiv.appendChild(messageParagraph);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
 </script>
+</body>
+</html>
