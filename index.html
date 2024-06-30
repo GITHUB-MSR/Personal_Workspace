@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Chat</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div id="messages"></div>
+        <input type="text" id="messageInput" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#messages {
+    min-height: 200px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    overflow-y: scroll;
+}
+
+input[type="text"] {
+    width: calc(100% - 70px);
+    padding: 8px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+button {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+</style>
+
+<script>
+    // Initialize WebSocket connection
+var socket = new WebSocket('ws://localhost:8080'); // Replace with your WebSocket server URL
+
+// Handle WebSocket open event
+socket.onopen = function(event) {
+    console.log('WebSocket connection established.');
+};
+
+// Handle WebSocket message event (receiving messages)
+socket.onmessage = function(event) {
+    var receivedMessage = event.data;
+    addMessage("Friend: " + receivedMessage);
+};
+
+// Handle WebSocket error event
+socket.onerror = function(error) {
+    console.error('WebSocket error: ', error);
+};
+
+// Handle WebSocket close event
+socket.onclose = function(event) {
+    console.log('WebSocket connection closed.');
+};
+
+function sendMessage() {
+    var messageInput = document.getElementById("messageInput");
+    var message = messageInput.value.trim();
+    if (message !== "") {
+        addMessage("You: " + message);
+        messageInput.value = "";
+        // Send message to WebSocket server
+        socket.send(message);
+    }
+}
+
+function addMessage(message) {
+    var messagesDiv = document.getElementById("messages");
+    var messageParagraph = document.createElement("p");
+    messageParagraph.textContent = message;
+    messagesDiv.appendChild(messageParagraph);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+</script>
